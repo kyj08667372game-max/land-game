@@ -126,7 +126,7 @@
         <!-- 컴퓨터 (쿠로미) -->
         <div class="player-card kuromi-card" id="computerKuromiCard">
           <div class="card-info text-right">
-            <div class="card-tag kuromi-tag">컴퓨터</div>
+            <div class="card-tag kuromi-tag" id="kuromiDiffTag">컴퓨터 (보통 ⚡)</div>
             <div class="card-name">쿠로미 😈</div>
             <div class="card-score-box">
               <span class="card-rate-pill kuromi-rate-pill" id="compRateBadge">0%</span>
@@ -269,6 +269,31 @@
               <strong class="rule-title">3. 30초 스피드 대결</strong>
               <span class="rule-desc">시간 종료 시 더 많은 땅을 차지한 쪽이 승리! 동점 시 15초 연장전!</span>
             </div>
+          </div>
+        </div>
+
+        <!-- 난이도 조절 (쉬움, 보통, 어려움) -->
+        <div class="intro-diff-section">
+          <div class="intro-diff-header">
+            <span class="intro-diff-title">🎯 난이도 조절:</span>
+            <span class="intro-diff-badge" id="introDiffBadge">⚡ 밸런스 매치! 긴장감 넘치는 스피드</span>
+          </div>
+          <div class="intro-diff-buttons" id="introDiffButtons">
+            <button type="button" class="intro-diff-opt" data-diff="easy">
+              <span class="diff-opt-icon">🌱</span>
+              <span class="diff-opt-label">쉬움</span>
+              <span class="diff-opt-desc">여유로운 속도</span>
+            </button>
+            <button type="button" class="intro-diff-opt active" data-diff="normal">
+              <span class="diff-opt-icon">⚡</span>
+              <span class="diff-opt-label">보통</span>
+              <span class="diff-opt-desc">기본 스피드</span>
+            </button>
+            <button type="button" class="intro-diff-opt" data-diff="hard">
+              <span class="diff-opt-icon">🔥</span>
+              <span class="diff-opt-label">어려움</span>
+              <span class="diff-opt-desc">초스피드 쿠로미</span>
+            </button>
           </div>
         </div>
 

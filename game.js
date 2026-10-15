@@ -399,6 +399,34 @@
     }
   }
 
+  // --- Difficulty Settings Definition ---
+  const DIFFICULTY_CONFIG = {
+    easy: {
+      minSpeed: 700,
+      variance: 300,
+      label: '쉬움',
+      emoji: '🌱',
+      desc: '🌱 초보자 추천! 여유로운 속도',
+      tag: '컴퓨터 (쉬움 🌱)'
+    },
+    normal: {
+      minSpeed: 400,
+      variance: 220,
+      label: '보통',
+      emoji: '⚡',
+      desc: '⚡ 밸런스 매치! 긴장감 넘치는 스피드',
+      tag: '컴퓨터 (보통 ⚡)'
+    },
+    hard: {
+      minSpeed: 190,
+      variance: 160,
+      label: '어려움',
+      emoji: '🔥',
+      desc: '🔥 고수 도전! 광속으로 몰아치는 쿠로미',
+      tag: '컴퓨터 (어려움 🔥)'
+    }
+  };
+
   // --- Real-time Speed Battle Game Class ---
   class LandGrabGame {
     constructor() {
@@ -408,6 +436,7 @@
       this.isGameOver = false;
       this.hasGameStarted = false;
       this.isGamePaused = false;
+      this.difficulty = 'normal'; // 'easy' | 'normal' | 'hard'
 
       // Real-time Timer & Rules
       this.initialDuration = 30; // 30 seconds
@@ -457,9 +486,12 @@
         soundToggleBtn: document.getElementById('soundToggleBtn'),
         soundIcon: document.getElementById('soundIcon'),
         soundText: document.getElementById('soundText'),
+        kuromiDiffTag: document.getElementById('kuromiDiffTag'),
         introOverlay: document.getElementById('introOverlay'),
         startGameBtn: document.getElementById('startGameBtn'),
         startBtnText: document.getElementById('startBtnText'),
+        introDiffBadge: document.getElementById('introDiffBadge'),
+        introDiffBtns: document.querySelectorAll('.intro-diff-opt'),
         introSizeBtns: document.querySelectorAll('.intro-size-opt'),
         resultModal: document.getElementById('resultModal'),
         modalReasonBadge: document.getElementById('modalReasonBadge'),
@@ -492,7 +524,36 @@
       this.startNewGame();
     }
 
+    setDifficulty(diff) {
+      if (!DIFFICULTY_CONFIG[diff]) return;
+      this.difficulty = diff;
+      const conf = DIFFICULTY_CONFIG[diff];
+
+      this.dom.introDiffBtns.forEach(b => {
+        b.classList.toggle('active', b.dataset.diff === diff);
+      });
+
+      if (this.dom.introDiffBadge) {
+        this.dom.introDiffBadge.textContent = conf.desc;
+      }
+
+      if (this.dom.kuromiDiffTag) {
+        this.dom.kuromiDiffTag.textContent = conf.tag;
+      }
+    }
+
     bindEvents() {
+      // Difficulty Buttons in Intro Modal
+      this.dom.introDiffBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const diffBtn = e.target.closest('.intro-diff-opt');
+          if (diffBtn) {
+            const diff = diffBtn.dataset.diff;
+            this.setDifficulty(diff);
+          }
+        });
+      });
+
       // Board Size Buttons in Header
       this.dom.sizeBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -718,8 +779,8 @@
     scheduleNextAiMove() {
       if (this.isGameOver) return;
 
-      // 판 크기 및 상황에 따라 400ms ~ 650ms 주기로 스스로 착수
-      const aiSpeed = Math.floor(420 + Math.random() * 240);
+      const conf = DIFFICULTY_CONFIG[this.difficulty] || DIFFICULTY_CONFIG.normal;
+      const aiSpeed = Math.floor(conf.minSpeed + Math.random() * conf.variance);
 
       this.aiTimeoutId = setTimeout(() => {
         if (this.isGameOver) return;
@@ -736,11 +797,40 @@
         return;
       }
 
-      // 무작위 빈 칸 하나 선택하여 점유
-      const randomIndex = Math.floor(Math.random() * emptyCells.length);
-      const chosen = emptyCells[randomIndex];
+      let chosenIndex = null;
 
-      this.claimCell(chosen.index, 'comp');
+      // 어려움 난이도일 경우 영토 확장/방해 전략적 우선순위 적용 (70% 확률)
+      if (this.difficulty === 'hard' && Math.random() < 0.7) {
+        const size = this.size;
+        const compCells = this.boardState.filter(c => c.owner === 'comp').map(c => c.index);
+
+        const adjacentEmpty = [];
+        emptyCells.forEach(cell => {
+          const r = Math.floor(cell.index / size);
+          const c = cell.index % size;
+          const neighbors = [
+            r > 0 ? (r - 1) * size + c : null,
+            r < size - 1 ? (r + 1) * size + c : null,
+            c > 0 ? r * size + (c - 1) : null,
+            c < size - 1 ? r * size + (c + 1) : null
+          ].filter(n => n !== null);
+
+          if (neighbors.some(n => compCells.includes(n))) {
+            adjacentEmpty.push(cell.index);
+          }
+        });
+
+        if (adjacentEmpty.length > 0) {
+          chosenIndex = adjacentEmpty[Math.floor(Math.random() * adjacentEmpty.length)];
+        }
+      }
+
+      if (chosenIndex === null) {
+        const randomIndex = Math.floor(Math.random() * emptyCells.length);
+        chosenIndex = emptyCells[randomIndex].index;
+      }
+
+      this.claimCell(chosenIndex, 'comp');
       this.sound.playKuromiMove();
 
       // 60% 즉시 승리 또는 빈 칸 소진 여부 체크

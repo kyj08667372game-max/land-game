@@ -1098,6 +1098,114 @@ html, body {
   line-height: 1.35;
 }
 
+/* 난이도 조절 */
+.intro-diff-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #F9F3FF;
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  border: 1.5px dashed #DCC6F0;
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.intro-diff-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.intro-diff-title {
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: var(--kuromi-primary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.intro-diff-badge {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--kuromi-dark);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  border: 1px solid #E2D0F5;
+}
+
+.intro-diff-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.intro-diff-opt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 6px;
+  border: 1.5px solid #E0CEF5;
+  background: #FFFFFF;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-family: var(--font-family-body);
+}
+
+.intro-diff-opt:hover {
+  transform: translateY(-2px);
+  border-color: #B991DC;
+  background: #FDFBFF;
+}
+
+.diff-opt-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.diff-opt-label {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.diff-opt-desc {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* Active styles per difficulty */
+.intro-diff-opt.active[data-diff="easy"] {
+  background: linear-gradient(135deg, #52B788, #40916C);
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(82, 183, 136, 0.35);
+}
+
+.intro-diff-opt.active[data-diff="normal"] {
+  background: linear-gradient(135deg, #9D4EDD, #7B2CBF);
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(157, 78, 221, 0.35);
+}
+
+.intro-diff-opt.active[data-diff="hard"] {
+  background: linear-gradient(135deg, #FF5E89, #E63946);
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(230, 57, 70, 0.35);
+}
+
+.intro-diff-opt.active .diff-opt-label,
+.intro-diff-opt.active .diff-opt-desc {
+  color: #FFFFFF;
+}
+
 /* 판 크기 선택 */
 .intro-size-section {
   display: flex;
