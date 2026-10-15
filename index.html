@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>산리오 헬로키티 땅따먹기 대결! 🎀</title>
+  <meta name="description" content="헬로키티와 함께하는 아기자기하고 귀여운 땅따먹기 대결 게임! 컴퓨터(쿠로미)와 영토를 넓혀 승리해보세요.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 배경 데코레이션 요소들 -->
+  <div class="bg-decorations" aria-hidden="true">
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+    <div class="floating-item star star-1">⭐</div>
+    <div class="floating-item heart heart-1">💖</div>
+    <div class="floating-item ribbon ribbon-1">🎀</div>
+    <div class="floating-item star star-2">✨</div>
+    <div class="floating-item heart heart-2">💕</div>
+    <div class="floating-item ribbon ribbon-2">🎀</div>
+  </div>
+
+  <div class="game-wrapper">
+    <!-- 헤더 영역 -->
+    <header class="game-header">
+      <div class="title-badge">
+        <span class="sparkle">✨</span>
+        <span class="sub-text">SANRIO FRIENDS</span>
+        <span class="sparkle">✨</span>
+      </div>
+      <h1 class="game-title">
+        <span class="title-icon kitty-title-icon"></span>
+        헬로키티 땅따먹기 대결!
+        <span class="title-icon kuromi-title-icon"></span>
+      </h1>
+      <p class="game-desc">빈 칸을 터치해 키티의 영토를 넓혀보세요! 💖</p>
+      
+      <div class="header-controls">
+        <!-- 보드 크기 선택 -->
+        <div class="board-size-selector" id="sizeSelectorGroup">
+          <label class="size-label">판 크기:</label>
+          <button type="button" class="size-btn" data-size="4" id="size4Btn">4x4</button>
+          <button type="button" class="size-btn active" data-size="5" id="size5Btn">5x5</button>
+          <button type="button" class="size-btn" data-size="6" id="size6Btn">6x6</button>
+          <button type="button" class="size-btn" data-size="8" id="size8Btn">8x8 (빅매치)</button>
+        </div>
+
+        <!-- 사운드 토글 -->
+        <button type="button" class="sound-toggle-btn" id="soundToggleBtn" aria-label="효과음 켜기/끄기" title="효과음">
+          <span class="sound-icon" id="soundIcon">🔔</span>
+          <span class="sound-text" id="soundText">소리 ON</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 스코어보드 & 상태 바 -->
+    <main class="game-container">
+      <section class="scoreboard-section" aria-label="점수 현황">
+        <!-- 플레이어 (헬로키티) -->
+        <div class="player-card kitty-card" id="playerKittyCard">
+          <div class="avatar-wrapper kitty-avatar">
+            <svg class="char-svg" viewBox="0 0 100 100" aria-label="헬로키티">
+              <!-- 키티 얼굴 베이스 -->
+              <ellipse cx="50" cy="55" rx="38" ry="30" fill="#FFFFFF" stroke="#4A343A" stroke-width="4"/>
+              <!-- 귀 -->
+              <path d="M 22 34 L 14 14 L 36 26 Z" fill="#FFFFFF" stroke="#4A343A" stroke-width="4" stroke-linejoin="round"/>
+              <path d="M 78 34 L 86 14 L 64 26 Z" fill="#FFFFFF" stroke="#4A343A" stroke-width="4" stroke-linejoin="round"/>
+              <!-- 시그니처 핑크/레드 리본 -->
+              <g class="kitty-ribbon-svg">
+                <circle cx="28" cy="22" r="7" fill="#FF4D79" stroke="#4A343A" stroke-width="3"/>
+                <ellipse cx="16" cy="18" rx="8" ry="6" fill="#FF7096" stroke="#4A343A" stroke-width="3" transform="rotate(-15 16 18)"/>
+                <ellipse cx="38" cy="19" rx="8" ry="6" fill="#FF7096" stroke="#4A343A" stroke-width="3" transform="rotate(20 38 19)"/>
+                <circle cx="28" cy="22" r="3" fill="#FFE247"/>
+              </g>
+              <!-- 눈 -->
+              <ellipse cx="35" cy="54" rx="3.5" ry="5" fill="#4A343A"/>
+              <ellipse cx="65" cy="54" rx="3.5" ry="5" fill="#4A343A"/>
+              <!-- 코 -->
+              <ellipse cx="50" cy="61" rx="4.5" ry="3.5" fill="#FFDA44" stroke="#4A343A" stroke-width="2.5"/>
+              <!-- 수염 -->
+              <line x1="12" y1="50" x2="26" y2="52" stroke="#4A343A" stroke-width="3" stroke-linecap="round"/>
+              <line x1="10" y1="59" x2="26" y2="58" stroke="#4A343A" stroke-width="3" stroke-linecap="round"/>
+              <line x1="88" y1="50" x2="74" y2="52" stroke="#4A343A" stroke-width="3" stroke-linecap="round"/>
+              <line x1="90" y1="59" x2="74" y2="58" stroke="#4A343A" stroke-width="3" stroke-linecap="round"/>
+              <!-- 볼터치 -->
+              <ellipse cx="26" cy="63" rx="5" ry="3" fill="#FFA5BA" opacity="0.75"/>
+              <ellipse cx="74" cy="63" rx="5" ry="3" fill="#FFA5BA" opacity="0.75"/>
+            </svg>
+            <div class="turn-indicator-dot"></div>
+          </div>
+          <div class="card-info">
+            <div class="card-tag">나 (플레이어)</div>
+            <div class="card-name">헬로키티 🎀</div>
+            <div class="card-score-box">
+              <span class="score-num" id="userScore">0</span>
+              <span class="score-unit">칸</span>
+              <span class="card-rate-pill" id="userRateBadge">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 중앙 VS, 타이머 및 남은 칸 -->
+        <div class="versus-card">
+          <div class="timer-badge" id="timerBadge">
+            <span class="timer-title" id="timerTitle">⏱️ 남은 시간</span>
+            <span class="timer-number" id="timerDisplay">30s</span>
+          </div>
+          <div class="remain-box">
+            <span class="remain-label">남은 빈 칸</span>
+            <span class="remain-count" id="remainingCount">25</span>
+          </div>
+        </div>
+
+        <!-- 컴퓨터 (쿠로미) -->
+        <div class="player-card kuromi-card" id="computerKuromiCard">
+          <div class="card-info text-right">
+            <div class="card-tag kuromi-tag">컴퓨터</div>
+            <div class="card-name">쿠로미 😈</div>
+            <div class="card-score-box">
+              <span class="card-rate-pill kuromi-rate-pill" id="compRateBadge">0%</span>
+              <span class="score-num" id="computerScore">0</span>
+              <span class="score-unit">칸</span>
+            </div>
+          </div>
+          <div class="avatar-wrapper kuromi-avatar">
+            <svg class="char-svg" viewBox="0 0 100 100" aria-label="쿠로미">
+              <!-- 쿠로미 모자 귀 -->
+              <path d="M 28 42 C 15 28 8 6 18 2 C 30 0 35 22 40 38 Z" fill="#2E243D" stroke="#1D1627" stroke-width="3.5" stroke-linejoin="round"/>
+              <path d="M 72 42 C 85 28 92 6 82 2 C 70 0 65 22 60 38 Z" fill="#2E243D" stroke="#1D1627" stroke-width="3.5" stroke-linejoin="round"/>
+              <!-- 귀 끝 핑크 방울 -->
+              <circle cx="17" cy="3" r="5" fill="#FF69B4" stroke="#1D1627" stroke-width="2"/>
+              <circle cx="83" cy="3" r="5" fill="#FF69B4" stroke="#1D1627" stroke-width="2"/>
+              <!-- 모자 본체 -->
+              <path d="M 18 55 C 18 30 82 30 82 55 C 82 66 76 74 50 74 C 24 74 18 66 18 55 Z" fill="#2E243D" stroke="#1D1627" stroke-width="3.5"/>
+              <!-- 얼굴 (흰색 영역) -->
+              <ellipse cx="50" cy="62" rx="28" ry="22" fill="#FFFFFF" stroke="#1D1627" stroke-width="3"/>
+              <!-- 이마의 핑크 해골 -->
+              <g class="skull-mark">
+                <ellipse cx="50" cy="40" rx="7" ry="6" fill="#FF69B4"/>
+                <circle cx="47.5" cy="39" r="1.5" fill="#2E243D"/>
+                <circle cx="52.5" cy="39" r="1.5" fill="#2E243D"/>
+                <rect x="47.5" y="44" width="5" height="3" rx="1" fill="#FF69B4"/>
+              </g>
+              <!-- 눈 (장난기 어린 눈) -->
+              <ellipse cx="38" cy="60" rx="3.5" ry="5.5" fill="#1D1627" transform="rotate(-6 38 60)"/>
+              <ellipse cx="62" cy="60" rx="3.5" ry="5.5" fill="#1D1627" transform="rotate(6 62 60)"/>
+              <circle cx="37" cy="58" r="1.5" fill="#FFFFFF"/>
+              <circle cx="61" cy="58" r="1.5" fill="#FFFFFF"/>
+              <!-- 속눈썹 -->
+              <line x1="33" y1="55" x2="30" y2="52" stroke="#1D1627" stroke-width="2" stroke-linecap="round"/>
+              <line x1="67" y1="55" x2="70" y2="52" stroke="#1D1627" stroke-width="2" stroke-linecap="round"/>
+              <!-- 코 & 귀여운 세모 입 -->
+              <circle cx="50" cy="65" r="1.5" fill="#FF69B4"/>
+              <path d="M 46 69 Q 50 73 54 69 Z" fill="#FF69B4" stroke="#1D1627" stroke-width="1.5"/>
+              <!-- 볼터치 -->
+              <ellipse cx="30" cy="67" rx="4" ry="2.5" fill="#FFB6C1" opacity="0.8"/>
+              <ellipse cx="70" cy="67" rx="4" ry="2.5" fill="#FFB6C1" opacity="0.8"/>
+            </svg>
+            <div class="turn-indicator-dot"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 전체 땅 대비 실시간 점유율 진행 바 (60% 승리 기준선 포함) -->
+      <div class="territory-wrapper">
+        <div class="territory-header-info">
+          <span class="info-title">🏆 전체 땅 점유율 (60% 이상 먼저 차지 시 즉시 승리!)</span>
+          <span class="info-target-text" id="targetCellsText">목표: 15칸</span>
+        </div>
+        <div class="territory-bar-container" title="전체 땅 대비 점유율">
+          <div class="territory-bar">
+            <!-- 유저 점유 -->
+            <div class="bar-fill user-fill" id="userBarFill" style="width: 0%;">
+              <span class="bar-percent" id="userPercent">0%</span>
+            </div>
+            <!-- 남은 빈 땅 영역 -->
+            <div class="bar-fill empty-fill" id="emptyBarFill" style="width: 100%;"></div>
+            <!-- 컴퓨터 점유 -->
+            <div class="bar-fill comp-fill" id="compBarFill" style="width: 0%;">
+              <span class="bar-percent" id="compPercent">0%</span>
+            </div>
+          </div>
+          <!-- 60% 즉시 승리 마커 라인 -->
+          <div class="goal-marker-60" style="left: 60%;" title="60% 즉시 승리 기준선">
+            <div class="marker-flag">60% 승리</div>
+            <div class="marker-line"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 실시간 상태 및 안내 메시지 배너 -->
+      <div class="status-banner" id="statusBanner">
+        <div class="banner-pulse"></div>
+        <span class="banner-emoji" id="bannerEmoji">⚡</span>
+        <span class="banner-text" id="bannerText">스피드 대결! 빈 칸을 자유롭게 연속으로 터치하세요!</span>
+      </div>
+
+      <!-- 게임 보드 영역 -->
+      <div class="board-frame">
+        <div class="board-inner-glow"></div>
+        <div class="game-board grid-5" id="gameBoard" role="grid" aria-label="땅따먹기 격자 판">
+          <!-- JS로 동적 생성 -->
+        </div>
+      </div>
+
+      <!-- 컨트롤 하단 버튼 -->
+      <div class="bottom-actions">
+        <button type="button" class="btn btn-reset" id="resetBtn">
+          <span class="btn-icon">🔄</span>
+          <span class="btn-label">처음부터 다시하기</span>
+        </button>
+      </div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="game-footer">
+      <p>🌸 Hello Kitty & Sanrio Friends Land Grab Battle 🌸</p>
+    </footer>
+  </div>
+
+  <!-- 게임 종료 결과 모달 -->
+  <div class="modal-overlay" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-ribbon-decor">🎀</div>
+      <div class="modal-avatar" id="modalAvatar">
+        <!-- JS로 동적 결과 아바타 삽입 -->
+      </div>
+      <div class="modal-reason-badge" id="modalReasonBadge">60% 영토 장악 즉시 승리! 🏆</div>
+      <h2 class="modal-title" id="modalTitle">축하합니다! 승리!</h2>
+      <p class="modal-subtitle" id="modalSubtitle">키티가 더 많은 땅을 차지했어요! 🎉</p>
+
+      <div class="modal-score-summary">
+        <div class="summary-item kitty-summary">
+          <div class="summary-name">헬로키티 🎀</div>
+          <div class="summary-score" id="modalKittyScore">0 칸</div>
+          <div class="summary-rate" id="modalKittyRate">점유율 0%</div>
+        </div>
+        <div class="summary-divider">:</div>
+        <div class="summary-item kuromi-summary">
+          <div class="summary-name">쿠로미 😈</div>
+          <div class="summary-score" id="modalKuromiScore">0 칸</div>
+          <div class="summary-rate" id="modalKuromiRate">점유율 0%</div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary-replay" id="modalReplayBtn">
+          <span>💖 한 판 더 하기! 💖</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 캔버스 (폭죽/컨페티 효과) -->
+  <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+
+  <script src="game.js"></script>
+</body>
+</html>
