@@ -107,6 +107,32 @@
       return this.soundEnabled;
     }
 
+    playGameStart() {
+      if (!this.soundEnabled) return;
+      const ctx = this.getAudioContext();
+      if (!ctx) return;
+
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const now = ctx.currentTime + idx * 0.08;
+        const dur = 0.18;
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + dur);
+      });
+    }
+
     playKittyMove() {
       if (!this.soundEnabled) return;
       const ctx = this.getAudioContext();
@@ -380,6 +406,8 @@
       this.totalCells = 25;
       this.boardState = []; // Array of { index, owner: null | 'user' | 'comp' }
       this.isGameOver = false;
+      this.hasGameStarted = false;
+      this.isGamePaused = false;
 
       // Real-time Timer & Rules
       this.initialDuration = 30; // 30 seconds
@@ -425,9 +453,14 @@
         computerKuromiCard: document.getElementById('computerKuromiCard'),
         resetBtn: document.getElementById('resetBtn'),
         sizeBtns: document.querySelectorAll('.size-btn'),
+        rulesBtn: document.getElementById('rulesBtn'),
         soundToggleBtn: document.getElementById('soundToggleBtn'),
         soundIcon: document.getElementById('soundIcon'),
         soundText: document.getElementById('soundText'),
+        introOverlay: document.getElementById('introOverlay'),
+        startGameBtn: document.getElementById('startGameBtn'),
+        startBtnText: document.getElementById('startBtnText'),
+        introSizeBtns: document.querySelectorAll('.intro-size-opt'),
         resultModal: document.getElementById('resultModal'),
         modalReasonBadge: document.getElementById('modalReasonBadge'),
         modalTitle: document.getElementById('modalTitle'),
@@ -443,21 +476,77 @@
       this.updateSoundButtonUI();
     }
 
+    selectBoardSize(newSize) {
+      if (newSize === this.size) return;
+      this.size = newSize;
+      this.totalCells = newSize * newSize;
+      this.winTargetCount = Math.ceil(this.totalCells * this.winThresholdRate);
+
+      this.dom.sizeBtns.forEach(b => {
+        b.classList.toggle('active', parseInt(b.dataset.size, 10) === newSize);
+      });
+      this.dom.introSizeBtns.forEach(b => {
+        b.classList.toggle('active', parseInt(b.dataset.size, 10) === newSize);
+      });
+
+      this.startNewGame();
+    }
+
     bindEvents() {
-      // Board Size Buttons
+      // Board Size Buttons in Header
       this.dom.sizeBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
           const newSize = parseInt(e.target.dataset.size, 10);
-          if (newSize !== this.size) {
-            this.dom.sizeBtns.forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            this.size = newSize;
-            this.totalCells = newSize * newSize;
-            this.winTargetCount = Math.ceil(this.totalCells * this.winThresholdRate);
-            this.startNewGame();
-          }
+          this.selectBoardSize(newSize);
         });
       });
+
+      // Board Size Buttons in Intro Modal
+      this.dom.introSizeBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const newSize = parseInt(e.target.dataset.size, 10);
+          this.selectBoardSize(newSize);
+        });
+      });
+
+      // Intro Start Game Button
+      if (this.dom.startGameBtn) {
+        this.dom.startGameBtn.addEventListener('click', () => {
+          this.sound.playGameStart();
+          this.closeIntroModal();
+          if (!this.hasGameStarted) {
+            this.hasGameStarted = true;
+            this.isGamePaused = false;
+            this.startCountdownTimer();
+            this.scheduleNextAiMove();
+            this.dom.statusBanner.className = 'status-banner';
+            this.dom.bannerEmoji.textContent = '⚡';
+            this.dom.bannerText.textContent = `스피드 대결! 빈 칸을 자유롭게 연속으로 터치하세요! (${this.winTargetCount}칸 선점 시 즉시 승리)`;
+          } else if (this.isGamePaused) {
+            this.isGamePaused = false;
+            this.startCountdownTimer();
+            this.scheduleNextAiMove();
+          }
+        });
+      }
+
+      // Rules Button
+      if (this.dom.rulesBtn) {
+        this.dom.rulesBtn.addEventListener('click', () => {
+          if (this.hasGameStarted && !this.isGameOver) {
+            this.isGamePaused = true;
+            this.stopAllTimers();
+            if (this.dom.startBtnText) {
+              this.dom.startBtnText.textContent = '게임 계속하기! 💖';
+            }
+          } else {
+            if (this.dom.startBtnText) {
+              this.dom.startBtnText.textContent = '게임 시작하기! 💖';
+            }
+          }
+          this.openIntroModal();
+        });
+      }
 
       // Sound Toggle Button
       this.dom.soundToggleBtn.addEventListener('click', () => {
@@ -468,6 +557,9 @@
       // Reset Button
       this.dom.resetBtn.addEventListener('click', () => {
         this.sound.playReset();
+        this.hasGameStarted = true;
+        this.isGamePaused = false;
+        this.closeIntroModal();
         this.startNewGame();
       });
 
@@ -475,6 +567,9 @@
       this.dom.modalReplayBtn.addEventListener('click', () => {
         this.closeModal();
         this.sound.playReset();
+        this.hasGameStarted = true;
+        this.isGamePaused = false;
+        this.closeIntroModal();
         this.startNewGame();
       });
     }
@@ -509,8 +604,13 @@
 
       // Reset status banner
       this.dom.statusBanner.className = 'status-banner';
-      this.dom.bannerEmoji.textContent = '⚡';
-      this.dom.bannerText.textContent = `스피드 대결! 빈 칸을 자유롭게 연속으로 터치하세요! (${this.winTargetCount}칸 선점 시 즉시 승리)`;
+      if (!this.hasGameStarted) {
+        this.dom.bannerEmoji.textContent = '🎀';
+        this.dom.bannerText.textContent = `시작 버튼을 눌러 키티와 함께 대결을 시작하세요! (${this.winTargetCount}칸 선점 시 즉시 승리)`;
+      } else {
+        this.dom.bannerEmoji.textContent = '⚡';
+        this.dom.bannerText.textContent = `스피드 대결! 빈 칸을 자유롭게 연속으로 터치하세요! (${this.winTargetCount}칸 선점 시 즉시 승리)`;
+      }
 
       // Active state on both players
       this.dom.playerKittyCard.classList.add('active-turn');
@@ -548,9 +648,11 @@
 
       this.updateUI();
 
-      // Start Countdown Timer & Real-time AI loop
-      this.startCountdownTimer();
-      this.scheduleNextAiMove();
+      // Start Countdown Timer & Real-time AI loop ONLY IF game has started
+      if (this.hasGameStarted && !this.isGamePaused) {
+        this.startCountdownTimer();
+        this.scheduleNextAiMove();
+      }
     }
 
     stopAllTimers() {
@@ -565,8 +667,9 @@
     }
 
     startCountdownTimer() {
+      this.stopAllTimers(); // prevent duplicate intervals
       this.timerInterval = setInterval(() => {
-        if (this.isGameOver) {
+        if (this.isGameOver || this.isGamePaused) {
           clearInterval(this.timerInterval);
           return;
         }
@@ -595,7 +698,7 @@
      * 사용자가 빈 칸을 자유롭게 연속 클릭
      */
     handleUserCellClick(index) {
-      if (this.isGameOver) return;
+      if (!this.hasGameStarted || this.isGamePaused || this.isGameOver) return;
 
       const cellData = this.boardState[index];
       // 이미 차지된 칸이면 무시
@@ -858,6 +961,18 @@
 
     closeModal() {
       this.dom.resultModal.classList.remove('active');
+    }
+
+    openIntroModal() {
+      if (this.dom.introOverlay) {
+        this.dom.introOverlay.classList.add('active');
+      }
+    }
+
+    closeIntroModal() {
+      if (this.dom.introOverlay) {
+        this.dom.introOverlay.classList.remove('active');
+      }
     }
   }
 

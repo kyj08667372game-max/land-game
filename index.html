@@ -49,11 +49,19 @@
           <button type="button" class="size-btn" data-size="8" id="size8Btn">8x8 (빅매치)</button>
         </div>
 
-        <!-- 사운드 토글 -->
-        <button type="button" class="sound-toggle-btn" id="soundToggleBtn" aria-label="효과음 켜기/끄기" title="효과음">
-          <span class="sound-icon" id="soundIcon">🔔</span>
-          <span class="sound-text" id="soundText">소리 ON</span>
-        </button>
+        <div class="header-right-buttons">
+          <!-- 게임 규칙 다시보기 버튼 -->
+          <button type="button" class="rules-btn" id="rulesBtn" aria-label="게임 규칙 보기" title="게임 규칙 보기">
+            <span class="rules-icon">📖</span>
+            <span class="rules-text">규칙 보기</span>
+          </button>
+
+          <!-- 사운드 토글 -->
+          <button type="button" class="sound-toggle-btn" id="soundToggleBtn" aria-label="효과음 켜기/끄기" title="효과음">
+            <span class="sound-icon" id="soundIcon">🔔</span>
+            <span class="sound-text" id="soundText">소리 ON</span>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -220,6 +228,69 @@
     <footer class="game-footer">
       <p>🌸 Hello Kitty & Sanrio Friends Land Grab Battle 🌸</p>
     </footer>
+  </div>
+
+  <!-- 게임 인트로 & 규칙 모달 -->
+  <div class="intro-overlay active" id="introOverlay" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+    <div class="intro-card">
+      <div class="intro-ribbon-tag">🎀 SANRIO SPEED BATTLE 🎀</div>
+
+      <!-- 배너 이미지 컨테이너 -->
+      <div class="intro-banner-wrap">
+        <img src="intro-banner.jpg" alt="헬로키티 vs 쿠로미 땅따먹기 대결" class="intro-banner-img" />
+        <div class="banner-badge badge-kitty">🎀 키티 (나)</div>
+        <div class="banner-badge badge-vs">VS</div>
+        <div class="banner-badge badge-kuromi">😈 쿠로미 (컴퓨터)</div>
+      </div>
+
+      <div class="intro-content">
+        <h2 class="intro-title" id="introTitle">헬로키티 땅따먹기 대결! 🎀</h2>
+        <p class="intro-desc">귀여운 헬로키티와 함께 빈 칸을 빠르게 터치해 쿠로미의 땅을 정복해보세요!</p>
+
+        <!-- 핵심 규칙 3단계 -->
+        <div class="rules-list">
+          <div class="rule-card">
+            <div class="rule-icon">⚡</div>
+            <div class="rule-info">
+              <strong class="rule-title">1. 실시간 무한 터치</strong>
+              <span class="rule-desc">기다릴 필요 없이 빈 칸을 빠르게 연속 클릭하여 내 땅으로 점령하세요!</span>
+            </div>
+          </div>
+          <div class="rule-card">
+            <div class="rule-icon">🏆</div>
+            <div class="rule-info">
+              <strong class="rule-title">2. 60% 선점 즉시 승리</strong>
+              <span class="rule-desc">전체 땅 중 60% 이상을 먼저 차지하는 즉시 승리합니다!</span>
+            </div>
+          </div>
+          <div class="rule-card">
+            <div class="rule-icon">⏱️</div>
+            <div class="rule-info">
+              <strong class="rule-title">3. 30초 스피드 대결</strong>
+              <span class="rule-desc">시간 종료 시 더 많은 땅을 차지한 쪽이 승리! 동점 시 15초 연장전!</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 판 크기 선택 -->
+        <div class="intro-size-section">
+          <span class="intro-size-title">🎮 판 크기 선택:</span>
+          <div class="intro-size-buttons" id="introSizeButtons">
+            <button type="button" class="intro-size-opt" data-size="4">4x4 (스피드)</button>
+            <button type="button" class="intro-size-opt active" data-size="5">5x5 (기본)</button>
+            <button type="button" class="intro-size-opt" data-size="6">6x6</button>
+            <button type="button" class="intro-size-opt" data-size="8">8x8 (빅매치)</button>
+          </div>
+        </div>
+
+        <!-- 게임 시작 / 계속하기 버튼 -->
+        <button type="button" class="btn-start-game" id="startGameBtn">
+          <span class="start-btn-sparkle">✨</span>
+          <span class="start-btn-text" id="startBtnText">게임 시작하기! 💖</span>
+          <span class="start-btn-sparkle">✨</span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- 게임 종료 결과 모달 -->
